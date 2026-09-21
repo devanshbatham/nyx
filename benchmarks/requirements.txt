@@ -1,0 +1,2 @@
+datasets==4.0.0
+httpx==0.28.1

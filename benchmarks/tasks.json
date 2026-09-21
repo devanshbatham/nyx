@@ -1,0 +1,99 @@
+{
+  "seed": 20260921,
+  "expected_cases": 2277,
+  "expected_sha256": "046a38c24747fd724003aca7e5f1d1b6e148d599092222361c0717ecff84ecad",
+  "tasks": {
+    "ag_news": {
+      "source": "huggingface",
+      "repo": "fancyzhx/ag_news",
+      "revision": "eb185aade064a813bc0b7f42de02595523103ca4",
+      "config": null,
+      "split": "test",
+      "per_class": 100,
+      "labels": ["world", "sports", "business", "science_technology"],
+      "criteria": {
+        "world": "International affairs, governments, diplomacy, conflict, or global events.",
+        "sports": "Sports teams, athletes, matches, tournaments, or sporting events.",
+        "business": "Companies, markets, finance, trade, or the economy.",
+        "science_technology": "Science, computing, technology, engineering, or space."
+      },
+      "instructions": "Classify the main topic of this news item."
+    },
+    "trec_coarse": {
+      "source": "url",
+      "url": "https://cogcomp.seas.upenn.edu/Data/QA/QC/TREC_10.label",
+      "source_sha256": "033f22c028c2bbba9ca682f68ffe204dc1aa6e1cf35dd6207f2d4ca67f0d0e8e",
+      "per_class": null,
+      "labels": ["abbreviation", "entity", "description", "human", "location", "numeric"],
+      "criteria": {
+        "abbreviation": "The answer is an abbreviation or an expanded abbreviation.",
+        "entity": "The answer is an object, substance, product, language, animal, or other entity.",
+        "description": "The answer is a definition, description, reason, or manner.",
+        "human": "The answer is a person, group, title, or description of a person.",
+        "location": "The answer is a city, country, state, mountain, or other location.",
+        "numeric": "The answer is a number, date, duration, distance, amount, percentage, or measurement."
+      },
+      "instructions": "Classify the type of answer this question requests."
+    },
+    "cola": {
+      "source": "huggingface",
+      "repo": "nyu-mll/glue",
+      "revision": "bcdcba79d07bc864c1c254ccfcedcce55bcc9a8c",
+      "config": "cola",
+      "split": "validation",
+      "per_class": 200,
+      "labels": ["unacceptable", "acceptable"],
+      "criteria": {
+        "unacceptable": "The sentence is not grammatically acceptable in standard English.",
+        "acceptable": "The sentence is grammatically acceptable in standard English."
+      },
+      "instructions": "Judge the grammatical acceptability of the sentence, not whether its meaning is sensible."
+    },
+    "rte": {
+      "source": "huggingface",
+      "repo": "nyu-mll/glue",
+      "revision": "bcdcba79d07bc864c1c254ccfcedcce55bcc9a8c",
+      "config": "rte",
+      "split": "validation",
+      "per_class": null,
+      "labels": ["entailment", "not_entailment"],
+      "criteria": {
+        "entailment": "The hypothesis follows from the premise.",
+        "not_entailment": "The hypothesis does not necessarily follow from the premise."
+      },
+      "instructions": "Determine whether the premise entails the hypothesis. Use only the supplied premise."
+    },
+    "emotion": {
+      "source": "huggingface",
+      "repo": "dair-ai/emotion",
+      "revision": "cab853a1dbdf4c42c2b3ef2173804746df8825fe",
+      "config": "split",
+      "split": "test",
+      "per_class": 50,
+      "labels": ["sadness", "joy", "love", "anger", "fear", "surprise"],
+      "criteria": {
+        "sadness": "The writer primarily expresses sadness.",
+        "joy": "The writer primarily expresses joy.",
+        "love": "The writer primarily expresses love or affection.",
+        "anger": "The writer primarily expresses anger.",
+        "fear": "The writer primarily expresses fear.",
+        "surprise": "The writer primarily expresses surprise."
+      },
+      "instructions": "Classify the primary emotion expressed by the writer."
+    },
+    "imdb": {
+      "source": "huggingface",
+      "repo": "stanfordnlp/imdb",
+      "revision": "e6281661ce1c48d982bc483cf8a173c1bbeb5d31",
+      "config": null,
+      "split": "test",
+      "per_class": 200,
+      "labels": ["negative", "positive"],
+      "criteria": {
+        "negative": "The review expresses an overall negative opinion of the movie.",
+        "positive": "The review expresses an overall positive opinion of the movie."
+      },
+      "instructions": "Classify the overall sentiment of this movie review."
+    }
+  }
+}
