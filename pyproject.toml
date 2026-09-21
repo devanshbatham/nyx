@@ -1,0 +1,42 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "nyx-sdk"
+version = "1.0.0"
+description = "Typed clients and production gateway for devanshbatham/nyx"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "Apache-2.0"
+authors = [{ name = "Devansh Batham" }]
+dependencies = ["httpx>=0.28,<1"]
+
+[project.optional-dependencies]
+server = [
+  "aiohttp>=3.12,<4",
+  "fastapi>=0.116,<1",
+  "numpy>=2,<3",
+  "pydantic>=2.11,<3",
+  "transformers==5.17.0",
+  "uvicorn[standard]>=0.35,<1",
+]
+test = [
+  "pytest>=8.4,<10",
+  "pytest-asyncio>=1.1,<2",
+]
+
+[project.scripts]
+nyx-keygen = "nyx.keygen:main"
+nyx-serve = "nyx.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/devanshbatham/nyx"
+Model = "https://huggingface.co/devanshbatham/nyx"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/nyx"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
