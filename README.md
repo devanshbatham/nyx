@@ -42,6 +42,19 @@ nyx ran locally through the API stack on one AMD Instinct MI325X. Jev ran over r
 | Dataset-macro F1 | 81.06% | 81.85% |
 | Pooled accuracy | 82.96% | 83.62% |
 
+### Before quantization
+
+The shared H1 development slice below compares the official Qwen base in BF16, the pre-quantization `nyx` BF16 checkpoint, and Jev 1.13.0 on the same 1,500 scored cases with identical labels and task semantics.
+
+| H1 task | Qwen base BF16 | `nyx` BF16 | Jev 1.13.0 |
+|---|---:|---:|---:|
+| Comment triage | 295/500 (59.00%) | **462/500 (92.40%)** | 455/500 (91.00%) |
+| Report completeness | 439/500 (87.80%) | **488/500 (97.60%)** | 468/500 (93.60%) |
+| Broad assets, exact set | 285/500 (57.00%) | **298/500 (59.60%)** | 284/500 (56.80%) |
+| **Overall** | **1,019/1,500 (67.93%)** | **1,248/1,500 (83.20%)** | **1,207/1,500 (80.47%)** |
+
+This is authored development evidence, not an independent public holdout. Qwen and `nyx` ran locally in BF16 on the same MI325X/SGLang stack; Jev ran through its remote API, so latency is intentionally omitted from this table. See the [pre-quantization evaluation record](benchmarks/prequant-h1.md).
+
 ## Hardware
 
 The model allocates 19.43 GB before workload-dependent KV cache and runtime overhead.
