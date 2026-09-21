@@ -1,6 +1,9 @@
 nyx
 Copyright 2026 Devansh Batham
 
-The separately distributed nyx model is derived from Qwen3.5-35B-A3B. Qwen and
+The separately distributed nyx model is derived from Qwen3.5-4B. Qwen and
 Alibaba Cloud are the original model authors. nyx is not endorsed by or affiliated
 with the Qwen authors.
+
+The animated benchmark SVG embeds an Iosevka font subset licensed separately
+under the SIL Open Font License 1.1; see assets/IOSEVKA-OFL.md.

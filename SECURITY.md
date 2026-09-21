@@ -4,7 +4,7 @@ Report vulnerabilities through GitHub's private vulnerability reporting for this
 not include production keys, model inputs, customer data, or public proof-of-concept exploits.
 
 Supported production deployments use the current `main` branch, the pinned model runtime published
-with `devanshbatham/nyx`, a loopback/private SGLang backend, and an HTTPS ingress in front of the
+with `devanshbatham/nyx`, a loopback/private llama.cpp backend, and an HTTPS ingress in front of the
 gateway. Rotate bearer keys after suspected exposure. Never ship gateway keys in browser bundles or
 mobile applications.
 

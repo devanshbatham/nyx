@@ -1,0 +1,16 @@
+diff --git a/tools/server/server-context.cpp b/tools/server/server-context.cpp
+index b6835e4..00000000 100644
+--- a/tools/server/server-context.cpp
++++ b/tools/server/server-context.cpp
+@@ -3853,5 +3853,10 @@ private:
+             llama_token id;
+             {
+                 scoped_timer timer(t_sampl, n_sampl);
+-                id = common_sampler_sample(slot.smpl.get(), slot.ctx_tgt, tok_idx);
++                // When post-sampling probabilities are requested, apply the grammar
++                // before the sampler so the returned distribution is normalized
++                // over the grammar-valid candidates.
++                id = common_sampler_sample(
++                        slot.smpl.get(), slot.ctx_tgt, tok_idx,
++                        slot.task->params.post_sampling_probs);
+             }

@@ -199,16 +199,15 @@ class AccessGuard:
 
 @asynccontextmanager
 async def lifespan(app):
-    limit = int(os.getenv('NYX_HOSTED_MAX_PROMPT_TOKENS', '262143'))
-    if not 1 <= limit <= 262143:
-        raise ValueError('Hosted prompt limit must be 1..262143')
+    limit = int(os.getenv('NYX_HOSTED_MAX_PROMPT_TOKENS', '4095'))
+    if not 1 <= limit <= 4095:
+        raise ValueError('Hosted prompt limit must be 1..4095')
     app.state.engine = await asyncio.to_thread(server.Engine, max_length=limit+1)
-    queue_size = int(os.getenv('NYX_HOSTED_QUEUE_SIZE', '128'))
+    queue_size = int(os.getenv('NYX_HOSTED_QUEUE_SIZE', '32'))
     if not 1 <= queue_size <= 4096:
         raise ValueError('Hosted queue size must be 1..4096')
     app.state.queue = asyncio.Queue(maxsize=queue_size)
-    remote = True
-    workers = int(os.getenv('NYX_HOSTED_WORKERS', '64'))
+    workers = int(os.getenv('NYX_HOSTED_WORKERS', '4'))
     if not 1 <= workers <= 256:
         raise ValueError('Hosted workers must be 1..256')
     tasks = [asyncio.create_task(server.worker(app)) for _ in range(workers)]
@@ -218,15 +217,8 @@ async def lifespan(app):
         for task in tasks:
             task.cancel()
         await asyncio.gather(*tasks, return_exceptions=True)
-        if remote:
-            model = app.state.engine.model
-            await model.async_client.aclose()
-            if getattr(model, 'abort_client', None) is not None:
-                from .backend_cancellation import drain_aborts
-                await drain_aborts()
-                await model.abort_client.aclose()
-            model.client.close()
-            model.pool.shutdown(wait=False, cancel_futures=True)
+        model = app.state.engine.model
+        await model.aclose()
 
 
 def create_app(key_hash=None):
@@ -234,7 +226,7 @@ def create_app(key_hash=None):
     app.state.metrics = HostedMetrics()
     install_validation_logging(app)
     max_questions()  # Fail startup if the configured bound is invalid.
-    max_inflight = int(os.getenv('NYX_HOSTED_MAX_INFLIGHT', '8'))
+    max_inflight = int(os.getenv('NYX_HOSTED_MAX_INFLIGHT', '1'))
     rate = int(os.getenv('NYX_HOSTED_REQUESTS_PER_MINUTE', '120'))
     max_waiting = int(os.getenv('NYX_HOSTED_MAX_WAITING', '0'))
     if not 1 <= max_inflight <= 4096 or not 0 <= rate <= 60000 or not 0 <= max_waiting <= 16384:
@@ -246,7 +238,7 @@ def create_app(key_hash=None):
     @app.get('/health')
     async def health():
         engine = app.state.engine
-        if getattr(engine, 'backend', None) == 'sglang':
+        if getattr(engine, 'backend', None) == 'llamacpp':
             try:
                 check = await engine.model.async_client.get('/health', timeout=2)
                 check.raise_for_status()
@@ -256,7 +248,7 @@ def create_app(key_hash=None):
 
     @app.get('/v1/models')
     def models():
-        return {'models': [{'name': name, 'description': 'nyx 35B-A3B INT4+FP8; Choice, Score, and Noul decisions.', 'release_date': '2026-09-21'}
+        return {'models': [{'name': name, 'description': 'nyx 4B; Choice, Score, and Noul decisions.', 'release_date': '2026-09-21'}
                            for name in [MODEL_ID, *sorted(ALIASES - {MODEL_ID})]]}
 
 
@@ -264,7 +256,7 @@ def create_app(key_hash=None):
     def limits():
         shared=os.getenv('NYX_CONTEXT_ACCOUNTING')=='shared'
         return dict(max_questions=max_questions(), max_choices=MAX_CHOICES, max_score_levels=10,
-                    max_prompt_tokens_per_question=32768 if shared else app.state.engine.max_length-1,
+                    max_prompt_tokens_per_question=app.state.engine.max_length-1,
                     max_total_prompt_tokens=65536 if shared else 640000, max_body_bytes=BODY_LIMIT,
                     context_accounting='shared_state_once_local_tokenizer' if shared else 'sum_compiled_prompts',
                     max_queued_requests=app.state.queue.maxsize,

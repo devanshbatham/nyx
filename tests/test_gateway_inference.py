@@ -41,9 +41,12 @@ class FakeModel:
     client = Client()
     pool = Pool()
 
+    async def aclose(self):
+        pass
+
 
 class FakeEngine:
-    backend = "sglang"
+    backend = "llamacpp"
     model = FakeModel()
 
     def __init__(self, max_length):

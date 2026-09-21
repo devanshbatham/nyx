@@ -1,6 +1,6 @@
 import pytest
 
-from nyx.sglang_backend import SGLangBackend
+from nyx.llamacpp_backend import LlamaCppBackend
 from nyx.shared_tokens import SharedPrefix, SharedTokens, common_prefix_length
 
 
@@ -16,5 +16,5 @@ def test_shared_representation_preserves_tokens_and_cache_keys():
         assert prompt[-1] == full[-1]
         with pytest.raises(IndexError):
             _ = prompt[-len(prompt) - 1]
-        assert SGLangBackend.cache_key(prompt, [15, 16]) == SGLangBackend.cache_key(full, [15, 16])
+        assert LlamaCppBackend.cache_key(prompt, [15, 16]) == LlamaCppBackend.cache_key(full, [15, 16])
     assert len(prefix.hashes) == 1

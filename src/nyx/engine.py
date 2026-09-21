@@ -1,4 +1,4 @@
-"""nyx prompt compiler and SGLang selected-logit inference engine."""
+"""nyx prompt compiler and llama.cpp selected-logit inference engine."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ from .contract import LABELS, candidates, messages
 
 
 class Engine:
-    def __init__(self, max_length: int = 32768):
+    def __init__(self, max_length: int = 4096):
         model_path = os.getenv("NYX_MODEL_PATH")
         if not model_path:
             raise ValueError("NYX_MODEL_PATH must point to a downloaded devanshbatham/nyx repository")
@@ -29,11 +29,10 @@ class Engine:
             self.ids.append(ids[0])
 
         from .compiler import PromptCompiler
-        from .sglang_backend import SGLangBackend
 
         self.compiler = PromptCompiler(self.tokenizer, max_length)
         self.max_length = max_length
-        self.backend = "sglang"
+        self.backend = os.getenv("NYX_BACKEND", "llamacpp").lower()
         self.temperature = 1.0
         self.temperatures = {}
         calibration = os.getenv("NYX_CALIBRATION")
@@ -44,11 +43,10 @@ class Engine:
             if not all(np.isfinite(value) and value > 0 for value in [self.temperature, *self.temperatures.values()]):
                 raise ValueError("Invalid calibration temperature")
 
-        self.model = SGLangBackend()
-        expected = os.getenv("NYX_BACKEND_MODEL_PATH", "/model")
-        actual = self.model.model_info.get("model_path")
-        if actual != expected:
-            raise ValueError(f"Backend model path mismatch: expected {expected!r}, received {actual!r}")
+        if self.backend != "llamacpp":
+            raise ValueError("NYX_BACKEND must be 'llamacpp'")
+        from .llamacpp_backend import LlamaCppBackend
+        self.model = LlamaCppBackend(LABELS, self.ids)
 
     def encode(self, state, question):
         if os.getenv("NYX_PREFIX_TOKENIZATION", "1") == "1":
@@ -101,7 +99,7 @@ class Engine:
                 raise ValueError("Shared context preparation requires one state")
             prompt = self.compiler.encode_shared(prefix, question)
             total += len(prompt.suffix)
-            if len(prompt) > 32768 or total > 65536:
+            if len(prompt) > self.max_length or total > 65536:
                 raise ContextBudgetExceeded("Shared context budget exceeded")
             prompts.append(prompt)
             sizes.append(len(candidates(question)[0]))
