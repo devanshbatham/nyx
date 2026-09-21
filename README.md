@@ -27,6 +27,7 @@ Local Qwen and nyx latency: MI325X, concurrency 1. Jev latency: remote HTTPS, co
 
 - 8 GB free RAM or unified memory for a single 4,096-token slot; more for larger contexts or concurrency
 - 6 GB free disk for the model, source, and build
+- Python 3.11+ and Git
 - A recent C++ compiler and CMake
 - Optional: Apple Metal, NVIDIA CUDA, or AMD ROCm/HIP for acceleration
 
@@ -34,10 +35,10 @@ Local Qwen and nyx latency: MI325X, concurrency 1. Jev latency: remote HTTPS, co
 
 ```bash
 git clone https://github.com/devanshbatham/nyx.git /opt/nyx
-hf download devanshbatham/nyx --local-dir /opt/nyx-model
 
 python3 -m venv /opt/nyx/.venv
 /opt/nyx/.venv/bin/pip install '/opt/nyx[server]'
+/opt/nyx/.venv/bin/hf download devanshbatham/nyx --local-dir /opt/nyx-model
 
 # Optional: NYX_ACCELERATOR=cpu|metal|cuda|hip. The default is auto.
 /opt/nyx/scripts/build-llama-cpp.sh /opt/llama.cpp
