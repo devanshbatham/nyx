@@ -2,7 +2,7 @@
 
 Production gateway and typed clients for [`devanshbatham/nyx`](https://huggingface.co/devanshbatham/nyx), a Qwen3.5-35B-A3B decision model with INT4 routed-expert storage and FP8 expert compute. It answers Choice, Score, and Noul questions through `POST /v1/systemone`; it does not generate chat text.
 
-![Six classification benchmarks comparing nyx, Qwen/Qwen3.5-35B-A3B, and Jev](assets/nyx-vs-jev-benchmarks.png)
+![Six classification benchmarks comparing nyx and Jev](assets/nyx-vs-jev-benchmarks.png)
 
 ## TypeSafe drop-in
 
@@ -27,21 +27,20 @@ This is wire compatibility, not behavioral identity: decisions, probabilities, c
 
 ## Performance
 
-These measurements use the same frozen 2,277 requests across AG News, TREC, CoLA, RTE, Emotion, and IMDb. Every provider received byte-equivalent request bodies at client concurrency 8, one Choice question per request, with zero errors or retries.
+These measurements use the same frozen 2,277 requests across AG News, TREC, CoLA, RTE, Emotion, and IMDb. Both models received byte-equivalent request bodies at client concurrency 8, one Choice question per request, with zero errors or retries.
 
 | System | Backend inference median / p95 | HTTP round trip median / p95 | Total wall time | Throughput |
 |---|---:|---:|---:|---:|
 | nyx INT4+FP8 | 62.97 / 85.30 ms | 66.25 / 89.22 ms | 20,209 ms | 112.67 req/s |
-| Qwen/Qwen3.5-35B-A3B | 74.45 / 97.38 ms | 78.23 / 101.82 ms | 23,824 ms | 95.58 req/s |
 | Jev 1.13 | not exposed | 182.33 / 245.12 ms | 53,666 ms | 42.43 req/s |
 
-nyx and the original Qwen model ran locally through the same API stack on one AMD Instinct MI325X. Jev ran over remote HTTPS on unmatched infrastructure, so its numbers describe observed round trip—not a controlled model-speed comparison. Backend inference comes from the local `Server-Timing` header. SGLang used continuous batching with `max-running-requests=64`; the benchmark's eight concurrent callers bounded the active batch envelope to eight. See [the complete benchmark](benchmarks/random-six.md).
+nyx ran locally through the API stack on one AMD Instinct MI325X. Jev ran over remote HTTPS on unmatched infrastructure, so its numbers describe observed round trip—not a controlled model-speed comparison. nyx backend inference comes from the local `Server-Timing` header; Jev did not expose server timing. SGLang used continuous batching with `max-running-requests=64`; the benchmark's eight concurrent callers bounded the active batch envelope to eight. See [the complete benchmark](benchmarks/random-six.md).
 
-| Metric | nyx INT4+FP8 | Qwen/Qwen3.5-35B-A3B | Jev 1.13 |
-|---|---:|---:|---:|
-| Dataset-macro accuracy | 81.45% | 82.38% | 82.10% |
-| Dataset-macro F1 | 81.06% | 82.02% | 81.85% |
-| Pooled accuracy | 82.96% | 83.93% | 83.62% |
+| Metric | nyx INT4+FP8 | Jev 1.13 |
+|---|---:|---:|
+| Dataset-macro accuracy | 81.45% | 82.10% |
+| Dataset-macro F1 | 81.06% | 81.85% |
+| Pooled accuracy | 82.96% | 83.62% |
 
 ## Hardware
 
