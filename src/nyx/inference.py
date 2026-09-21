@@ -1,4 +1,4 @@
-"""Bounded request workers for the Nyx SGLang gateway."""
+"""Bounded request workers for the nyx SGLang gateway."""
 
 from __future__ import annotations
 

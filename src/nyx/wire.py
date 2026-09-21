@@ -1,4 +1,4 @@
-"""Typed public request and response schema for the Nyx decision API."""
+"""Typed public request and response schema for the nyx decision API."""
 
 from __future__ import annotations
 
@@ -142,7 +142,7 @@ class ScoreQuestion(BaseModel):
         ...,
         description="Ordered descriptions of the score levels. Each description's position determines its score, starting at zero.",
         examples=[["Can wait", "Needs attention this week", "Needs attention today"]],
-        min_length=1,
+        min_length=2,
         title="Criteria",
     )
 
@@ -194,7 +194,7 @@ class Question(RootModel[NoulQuestion | ChoiceQuestion | ScoreQuestion]):
 
 
 class SystemOneRequest(BaseModel):
-    state: str | dict[str, Any] | list[Any] = Field(
+    state: str | dict[str, Any] | list[Any] | None = Field(
         ...,
         description="The content all questions in this request refer to.",
         examples=["I was charged twice. Please help.", {"message": "Please help.", "subject": "Duplicate charge"}],

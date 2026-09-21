@@ -24,6 +24,7 @@ server = [
 test = [
   "pytest>=8.4,<10",
   "pytest-asyncio>=1.1,<2",
+  "typesafe-sdk==0.7.0",
 ]
 
 [project.scripts]

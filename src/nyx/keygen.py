@@ -1,4 +1,4 @@
-"""Generate a local Nyx bearer key without printing it."""
+"""Generate a local nyx bearer key without printing it."""
 
 from __future__ import annotations
 

@@ -18,6 +18,7 @@ async def test_gateway_fails_closed_without_valid_bearer():
         allowed = await client.get("/v1/models", headers={"Authorization": f"Bearer {key}"})
         assert allowed.status_code == 200
         assert allowed.json()["models"][0]["name"] == "nyx"
+        assert "jev-latest" in {model["name"] for model in allowed.json()["models"]}
 
 
 def test_gateway_rejects_invalid_key_hash():

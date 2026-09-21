@@ -1,4 +1,4 @@
-"""Authenticated production gateway for the Nyx decision API."""
+"""Authenticated production gateway for the nyx decision API."""
 import asyncio
 from contextlib import asynccontextmanager
 import hashlib
@@ -19,7 +19,7 @@ from .hosted_metrics import HostedMetrics
 from .backend_errors import log_backend_failure
 from .shared_tokens import ContextBudgetExceeded
 
-ALIASES = {MODEL_ID, 'devanshbatham/nyx'}
+ALIASES = {MODEL_ID, 'devanshbatham/nyx', 'jev', 'jev-latest', 'jev-preview', 'jev-1.13.0'}
 BODY_LIMIT = 2 * 1024 * 1024
 
 
@@ -94,6 +94,7 @@ class AccessGuard:
                 status = message['status']
                 message['headers'] = list(message.get('headers', [])) + [
                     (b'x-nyx-request-id', request_id.encode()),
+                    (b'x-typesafe-request-id', request_id.encode()),
                     (b'cache-control', b'no-store'),
                     (b'x-content-type-options', b'nosniff'),
                     (b'x-local-admission-ms', f"{detail.get('admission_ms', 0):.3f}".encode())]
@@ -229,7 +230,7 @@ async def lifespan(app):
 
 
 def create_app(key_hash=None):
-    app = FastAPI(title='Nyx Decision API', version='1.0.0', lifespan=lifespan)
+    app = FastAPI(title='nyx Decision API', version='1.0.0', lifespan=lifespan)
     app.state.metrics = HostedMetrics()
     install_validation_logging(app)
     max_questions()  # Fail startup if the configured bound is invalid.
@@ -255,7 +256,7 @@ def create_app(key_hash=None):
 
     @app.get('/v1/models')
     def models():
-        return {'models': [{'name': name, 'description': 'Nyx 35B-A3B INT4+FP8; Choice, Score, and Noul decisions.', 'release_date': '2026-09-21'}
+        return {'models': [{'name': name, 'description': 'nyx 35B-A3B INT4+FP8; Choice, Score, and Noul decisions.', 'release_date': '2026-09-21'}
                            for name in [MODEL_ID, *sorted(ALIASES - {MODEL_ID})]]}
 
 
@@ -270,7 +271,7 @@ def create_app(key_hash=None):
                     max_concurrent_requests=max_inflight, max_waiting_requests=max_waiting,
                     requests_per_minute=rate or None,
                     inference_deadline_seconds=120,
-                    confidence='Nyx empirical confidence statistic')
+                    confidence='nyx empirical confidence statistic')
 
     @app.get('/internal/metrics')
     async def metrics():

@@ -1,4 +1,4 @@
-"""Public Nyx request semantics. Local limits are explicit; confidence is approximate."""
+"""Public nyx request semantics. Local limits are explicit; confidence is approximate."""
 import json, math, os
 from pathlib import Path
 LABELS=json.loads(Path(os.getenv("NYX_LABELS_PATH", str(Path(__file__).with_name("labels.json")))).read_text())
@@ -10,7 +10,7 @@ MAX_CHOICES = len(LABELS)
 MAX_SCORE_LEVELS = 10
 
 def max_questions():
-    limit = int(os.getenv('NYX_MAX_QUESTIONS', '64'))
+    limit = int(os.getenv('NYX_MAX_QUESTIONS', '0'))
     if not 0 <= limit <= 1024:
         raise ValueError('NYX_MAX_QUESTIONS must be 0..1024; 0 means no question-count cap')
     return limit or None
@@ -19,8 +19,8 @@ def canonical(x):
     return x if isinstance(x, str) else json.dumps(x, ensure_ascii=False, sort_keys=True, separators=(',', ':'), allow_nan=False)
 
 def structured(x):
-    if not isinstance(x, (str, dict, list)):
-        raise ValueError('Expected string, object, or array')
+    if x is not None and not isinstance(x, (str, dict, list)):
+        raise ValueError('Expected string, object, array, or null')
     canonical(x)
     return x
 
@@ -38,8 +38,8 @@ class Question(BaseModel):
             if not isinstance(c, dict) or not 1 <= len(c) <= MAX_CHOICES or not all(isinstance(k,str) and (v is None or isinstance(v,str)) for k,v in c.items()):
                 raise ValueError(f'Choice requires 1..{MAX_CHOICES} string options with string or null descriptions')
         elif self.type == 'score':
-            if not isinstance(c, list) or not 1 <= len(c) <= MAX_SCORE_LEVELS or not all(isinstance(x,str) for x in c):
-                raise ValueError('Score requires 1..10 ordered string levels')
+            if not isinstance(c, list) or not 2 <= len(c) <= MAX_SCORE_LEVELS or not all(isinstance(x,str) for x in c):
+                raise ValueError('Score requires 2..10 ordered string levels')
         elif self.type == 'noul':
             if c is not None and (not isinstance(c,dict) or not set(c) <= {'true','false'} or not all(isinstance(v,str) for v in c.values())):
                 raise ValueError('Noul criteria permits true/false string descriptions')

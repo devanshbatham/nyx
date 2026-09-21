@@ -1,5 +1,5 @@
 [Unit]
-Description=Nyx authenticated decision gateway
+Description=nyx authenticated decision gateway
 After=network-online.target nyx-model.service
 Wants=network-online.target
 
@@ -7,9 +7,9 @@ Wants=network-online.target
 Type=simple
 User=nyx
 Group=nyx
-WorkingDirectory=/opt/nyx-sdk
+WorkingDirectory=/opt/nyx
 EnvironmentFile=/etc/nyx/gateway.env
-ExecStart=/opt/nyx-sdk/.venv/bin/nyx-serve
+ExecStart=/opt/nyx/.venv/bin/nyx-serve
 Restart=on-failure
 RestartSec=5s
 TimeoutStopSec=30s

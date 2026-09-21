@@ -1,4 +1,4 @@
-"""Typed synchronous and asynchronous clients for the Nyx API."""
+"""Typed synchronous and asynchronous clients for the nyx API."""
 
 from __future__ import annotations
 
@@ -37,7 +37,7 @@ def _settings(api_key: str | None, base_url: str | None) -> tuple[str, str]:
     return key, url
 
 
-class NyxClient:
+class Client:
     def __init__(self, *, api_key: str | None = None, base_url: str | None = None,
                  timeout: float = 120.0, transport: httpx.BaseTransport | None = None):
         key, url = _settings(api_key, base_url)
@@ -66,7 +66,7 @@ class NyxClient:
         self.close()
 
 
-class AsyncNyxClient:
+class AsyncClient:
     def __init__(self, *, api_key: str | None = None, base_url: str | None = None,
                  timeout: float = 120.0, transport: httpx.AsyncBaseTransport | None = None):
         key, url = _settings(api_key, base_url)

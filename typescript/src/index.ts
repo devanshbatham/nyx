@@ -23,7 +23,7 @@ export type Question = ChoiceQuestion | ScoreQuestion | NoulQuestion;
 export type SystemOneRequest = {
   state: JsonValue;
   questions: Record<string, Question>;
-  model?: "nyx" | "devanshbatham/nyx";
+  model?: string;
 };
 
 export type Answer =
@@ -32,32 +32,32 @@ export type Answer =
   | { type: "noul"; noul: number };
 
 export type SystemOneResponse = {
-  model: "nyx";
+  model: string;
   answers: Record<string, Answer>;
   usage: { input_tokens: number; output_tokens: number };
 };
 
-export class NyxApiError extends Error {
+export class APIError extends Error {
   constructor(public readonly status: number, public readonly body: string) {
-    super(`Nyx API returned HTTP ${status}`);
-    this.name = "NyxApiError";
+    super(`nyx API returned HTTP ${status}`);
+    this.name = "APIError";
   }
 }
 
-export type NyxClientOptions = {
+export type ClientOptions = {
   apiKey: string;
   baseUrl?: string;
   timeoutMs?: number;
   fetch?: typeof globalThis.fetch;
 };
 
-export class NyxClient {
+export class Client {
   readonly #apiKey: string;
   readonly #baseUrl: string;
   readonly #timeoutMs: number;
   readonly #fetch: typeof globalThis.fetch;
 
-  constructor(options: NyxClientOptions) {
+  constructor(options: ClientOptions) {
     if (!options.apiKey) throw new TypeError("apiKey is required");
     this.#apiKey = options.apiKey;
     this.#baseUrl = (options.baseUrl ?? "http://127.0.0.1:8000").replace(/\/$/, "");
@@ -91,7 +91,7 @@ export class NyxClient {
         redirect: "error",
         signal: controller.signal,
       });
-      if (!response.ok) throw new NyxApiError(response.status, await response.text());
+      if (!response.ok) throw new APIError(response.status, await response.text());
       return (await response.json()) as T;
     } finally {
       clearTimeout(timer);

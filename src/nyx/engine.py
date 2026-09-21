@@ -1,4 +1,4 @@
-"""Nyx prompt compiler and SGLang selected-logit inference engine."""
+"""nyx prompt compiler and SGLang selected-logit inference engine."""
 
 from __future__ import annotations
 

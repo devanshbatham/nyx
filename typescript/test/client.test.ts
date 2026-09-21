@@ -1,10 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { NyxApiError, NyxClient } from "../src/index.js";
+import { APIError, Client } from "../src/index.js";
 
 test("sends authenticated systemone requests", async () => {
-  const client = new NyxClient({
+  const client = new Client({
     apiKey: "secret",
     baseUrl: "https://nyx.invalid/",
     fetch: async (input, init) => {
@@ -26,12 +26,12 @@ test("sends authenticated systemone requests", async () => {
 });
 
 test("raises typed HTTP errors", async () => {
-  const client = new NyxClient({
+  const client = new Client({
     apiKey: "secret",
     fetch: async () => new Response("denied", { status: 401 }),
   });
   await assert.rejects(client.models(), (error: unknown) => {
-    assert.ok(error instanceof NyxApiError);
+    assert.ok(error instanceof APIError);
     assert.equal(error.status, 401);
     assert.equal(error.body, "denied");
     return true;
